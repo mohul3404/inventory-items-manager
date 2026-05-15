@@ -4,6 +4,24 @@ Full-stack inventory management app built with **React + TypeScript** and **ASP.
 
 This project was created for a Software Development Intern assignment and focuses on clean data flow, practical architecture, and a polished user experience.
 
+---
+
+# Live Demo
+
+## Frontend
+
+https://inventory-items-manager-frontend.onrender.com
+
+## Backend API
+
+https://inventory-items-manager-backend.onrender.com
+
+## Swagger Documentation
+
+https://inventory-items-manager-backend.onrender.com/swagger
+
+---
+
 ## At a Glance
 
 | Area | Details |
@@ -195,16 +213,21 @@ The backend is designed so the in-memory repository can later be replaced with a
 
 ## Current Verification
 
-Completed locally:
+Completed locally and on deployed environment:
 
 - .NET 8 SDK detected
 - `dotnet restore` passes
 - `dotnet build` passes with zero warnings and zero errors
-- Backend runs on `http://localhost:5000`
-- `GET /api/v1/items` returns seeded inventory data
-- Local CORS allows the Vite frontend origin
-- API create/delete smoke test passes
+- Backend runs successfully
+- Frontend deployed successfully
+- `GET /api/v1/items` returns inventory data
+- API create/update/delete operations verified
+- Validation handling verified
+- Proper 404 responses verified
 - Frontend production build passes with `npm run build`
+- Search and filters working
+- Responsive mobile layout verified
+- Frontend-backend integration verified
 
 ## Assignment Scope
 
@@ -218,6 +241,9 @@ Implemented:
 - Error/loading/empty states
 - Clean project structure
 - Recruiter-readable documentation
+- Responsive design
+- Swagger API documentation
+- Deployment on Render
 
 Intentionally out of scope for this assignment:
 
@@ -228,4 +254,41 @@ Intentionally out of scope for this assignment:
 
 ## Deployment
 
-Deployment configuration is prepared, but final deployment steps will be handled later.
+Application successfully deployed on Render.
+
+### Frontend
+
+https://inventory-items-manager-frontend.onrender.com
+
+### Backend
+
+https://inventory-items-manager-backend.onrender.com
+
+### Swagger
+
+https://inventory-items-manager-backend.onrender.com/swagger
+
+## Deployment Verification
+
+The deployed application has been tested successfully.
+
+### Backend Verified
+
+- GET all items
+- GET item by ID
+- POST create item
+- PUT update item
+- DELETE item
+- Validation handling
+- Proper 404 responses
+
+### Frontend Verified
+
+- API integration working
+- Add item flow working
+- Edit item flow working
+- Delete item flow working
+- Search and filters working
+- Form validation working
+- Responsive mobile layout verified
+- Network requests verified in browser DevTools
