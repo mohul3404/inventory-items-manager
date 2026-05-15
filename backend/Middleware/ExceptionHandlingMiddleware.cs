@@ -1,8 +1,13 @@
 using System.Net;
 using System.Text.Json;
+using InventoryItemsManager.Api.Common;
 
 namespace InventoryItemsManager.Api.Middleware;
 
+/// <summary>
+/// Global exception handling middleware.
+/// Catches unhandled exceptions and returns structured error responses.
+/// </summary>
 public sealed class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
@@ -20,36 +25,54 @@ public sealed class ExceptionHandlingMiddleware
         {
             await _next(context);
         }
-        catch (ArgumentException exception)
+        catch (OperationCanceledException)
         {
-            _logger.LogWarning(exception, "Validation failure.");
-            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            await WriteProblemAsync(context, exception.Message);
+            _logger.LogWarning("Request was cancelled.");
+            context.Response.StatusCode = (int)HttpStatusCode.RequestTimeout;
+            await WriteErrorResponseAsync(context, "Request Timeout", "The request was cancelled or timed out.");
         }
-        catch (ArgumentOutOfRangeException exception)
+        catch (ArgumentOutOfRangeException ex)
         {
-            _logger.LogWarning(exception, "Invalid range.");
+            _logger.LogWarning("Range validation error: {Message}", ex.Message);
             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            await WriteProblemAsync(context, exception.Message);
+            await WriteErrorResponseAsync(context, "Validation Error", ex.Message);
         }
-        catch (Exception exception)
+        catch (ArgumentException ex)
         {
-            _logger.LogError(exception, "Unhandled exception.");
+            _logger.LogWarning("Validation error: {Message}", ex.Message);
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            await WriteErrorResponseAsync(context, "Validation Error", ex.Message);
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogWarning("Invalid operation: {Message}", ex.Message);
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            await WriteErrorResponseAsync(context, "Invalid Operation", ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unhandled exception occurred.");
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            await WriteProblemAsync(context, "An unexpected error occurred.");
+            await WriteErrorResponseAsync(context, "Internal Server Error", "An unexpected error occurred. Please try again later.");
         }
     }
 
-    private static Task WriteProblemAsync(HttpContext context, string detail)
+    private static Task WriteErrorResponseAsync(HttpContext context, string title, string detail)
     {
         context.Response.ContentType = "application/problem+json";
-        var payload = JsonSerializer.Serialize(new
-        {
-            title = "Request failed",
-            status = context.Response.StatusCode,
-            detail
-        });
 
-        return context.Response.WriteAsync(payload);
+        var errorResponse = new ApiErrorResponse
+        {
+            Type = "https://httpwg.org/specs/rfc7807.html#section-3",
+            Title = title,
+            Status = context.Response.StatusCode,
+            Detail = detail,
+            Instance = context.Request.Path
+        };
+
+        var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        var json = JsonSerializer.Serialize(errorResponse, options);
+
+        return context.Response.WriteAsync(json);
     }
 }

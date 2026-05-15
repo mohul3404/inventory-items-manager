@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: inventory-items-manager-api
+    runtime: docker
+    dockerfilePath: backend/Dockerfile
+    dockerContext: backend
+    plan: free
+    healthCheckPath: /api/v1/items
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+
+  - type: web
+    name: inventory-items-manager-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false

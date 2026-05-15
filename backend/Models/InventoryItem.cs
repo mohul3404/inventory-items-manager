@@ -13,6 +13,8 @@ public sealed class InventoryItem
     public string Name { get; set; } = string.Empty;
     public string Sku { get; set; } = string.Empty;
     public int Quantity { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     public StockStatus Status => Quantity switch
     {
         0 => StockStatus.OutOfStock,
