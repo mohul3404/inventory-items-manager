@@ -92,14 +92,11 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 // Use CORS
 app.UseCors("AllowFrontend");
 
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Inventory API v1");
-    });
-}
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Inventory API v1");
+});
 
 if (!app.Environment.IsProduction() && !string.IsNullOrWhiteSpace(builder.Configuration["HTTPS_PORT"]))
 {
