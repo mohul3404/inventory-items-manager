@@ -106,4 +106,14 @@ if (!app.Environment.IsProduction() && !string.IsNullOrWhiteSpace(builder.Config
 app.UseAuthorization();
 app.MapControllers();
 
+app.MapGet("/", () =>
+{
+    return Results.Ok(new
+    {
+        success = true,
+        message = "Inventory Items Manager API is running successfully",
+        documentation = "/swagger"
+    });
+});
+
 app.Run();
